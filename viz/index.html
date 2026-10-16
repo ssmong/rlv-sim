@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RLV Descent Replay — Falcon-9-class booster</title>
+<link rel="icon" href="data:," />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@200;300;400;500&family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* ---- Backgrounds ---- */
+    --sx-bg:            #020408;
+    --sx-panel:         rgba(2, 4, 8, 0.66);
+    --sx-panel-solid:   rgba(2, 4, 8, 0.82);
+    --sx-blur:          14px;
+    --sx-hairline:      rgba(255, 255, 255, 0.07);
+    --sx-grid:          rgba(255, 255, 255, 0.026);
+
+    /* ---- Text ---- */
+    --sx-text:          #ffffff;
+    --sx-text-body:     #f0f4f8;
+    --sx-text-dim:      rgba(180, 200, 230, 0.45);
+    --sx-text-label:    rgba(180, 200, 230, 0.38);
+    --sx-text-micro:    rgba(180, 200, 230, 0.28);
+
+    /* ---- Accent (cool plasma blue, glow only) ---- */
+    --sx-accent:        #a0c8ff;
+    --sx-accent-glow:   rgba(160, 200, 255, 0.55);
+    --sx-accent-tint:   rgba(160, 200, 255, 0.12);
+    --sx-accent-border: rgba(160, 200, 255, 0.32);
+    --sx-num-glow:      0 0 24px rgba(160, 200, 255, 0.30);
+
+    /* ---- Timeline / lines ---- */
+    --sx-track:         rgba(255, 255, 255, 0.10);
+    --sx-track-fill:    rgba(255, 255, 255, 0.74);
+    --sx-marker-off:    rgba(255, 255, 255, 0.22);
+    --sx-marker-on:     rgba(255, 255, 255, 0.92);
+
+    /* ---- Phase colors (PHASE tag + active marker only) ---- */
+    --sx-phase-0: #ff6b4a;  /* REENTRY_BURN  */
+    --sx-phase-1: #ffc850;  /* AERO_DESCENT  */
+    --sx-phase-2: #a0c8ff;  /* POWERED_BRAKE */
+    --sx-phase-3: #6be0a0;  /* POWERED_DESCENT */
+
+    /* ---- Engine / octaweb ---- */
+    --sx-engine-off:    rgba(255, 255, 255, 0.12);
+    --sx-engine-on:     #ffffff;
+
+    /* ---- Typography ---- */
+    --sx-font-display:  "D-DIN", "Saira", "IBM Plex Sans", "Inter", system-ui, -apple-system, sans-serif;
+    --sx-font-mono:     "IBM Plex Mono", "Cascadia Code", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--sx-bg); color: var(--sx-text-body);
+    font-family: var(--sx-font-display); overflow: hidden; -webkit-font-smoothing: antialiased; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+
+  /* faint technical grid under the scene */
+  #app::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background-image: linear-gradient(var(--sx-grid) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--sx-grid) 1px, transparent 1px);
+    background-size: 52px 52px; mix-blend-mode: screen; }
+
+  .panel { background: var(--sx-panel); border: 1px solid var(--sx-hairline);
+    backdrop-filter: blur(var(--sx-blur)); -webkit-backdrop-filter: blur(var(--sx-blur)); }
+
+  /* ============ top-left: engineering telemetry column ============ */
+  #eng-col { position: fixed; top: 26px; left: 28px; z-index: 5; min-width: 196px; }
+  #eng-col .hdr { font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--sx-text-label); font-weight: 400; margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
+  #eng-col .hdr .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--sx-accent);
+    box-shadow: 0 0 6px var(--sx-accent-glow); }
+  .erow { display: flex; justify-content: space-between; align-items: baseline; gap: 18px;
+    padding: 2px 0; }
+  .erow .k { font-size: 9px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--sx-text-dim); }
+  .erow .v { font-family: var(--sx-font-mono); font-size: 13px; font-weight: 400;
+    font-variant-numeric: tabular-nums; color: var(--sx-text-body); }
+  #phaseTag { display: inline-block; margin-top: 10px; font-size: 9px; letter-spacing: 0.22em;
+    text-transform: uppercase; font-weight: 500; color: var(--sx-accent); }
+
+  /* ============ top-right: octaweb engine status ============ */
+  #octaweb { position: fixed; top: 26px; right: 28px; z-index: 5; width: 132px; text-align: center; }
+  #octaweb .cap { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--sx-text-label); margin-bottom: 8px; }
+  #octSvg { width: 92px; height: 92px; display: block; margin: 0 auto; }
+  #octSvg .ring { fill: none; stroke: rgba(255,255,255,0.10); stroke-width: 0.6; }
+  #octSvg circle.eng { fill: var(--sx-engine-off); transition: fill 0.08s linear; }
+  #octSvg circle.eng.lit { fill: var(--sx-engine-on);
+    filter: drop-shadow(0 0 2.4px rgba(255,255,255,0.8)) drop-shadow(0 0 5px var(--sx-accent-glow)); }
+  #octThrottle { margin-top: 6px; font-family: var(--sx-font-mono); font-size: 16px; font-weight: 300;
+    color: var(--sx-text); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  #octThrottle small { font-size: 8px; letter-spacing: 0.22em; color: var(--sx-text-label);
+    display: block; margin-top: 1px; font-family: var(--sx-font-display); }
+
+  /* ============ mid-left: actuator card ============ */
+  #actuators { position: fixed; top: 50%; left: 28px; transform: translateY(-50%); z-index: 5;
+    width: 230px; padding: 12px 14px; border-radius: 3px; }
+  #actuators h2 { margin: 0 0 10px; font-size: 9px; letter-spacing: 0.24em; color: var(--sx-text-label);
+    text-transform: uppercase; font-weight: 400; }
+  .gimbalWrap { display: flex; gap: 14px; align-items: center; }
+  #gimbalPad { width: 66px; height: 66px; border: 1px solid var(--sx-hairline); border-radius: 3px;
+    position: relative; background: rgba(255,255,255,0.015); }
+  #gimbalPad .cross { position: absolute; background: var(--sx-hairline); }
+  #gimbalPad .cross.h { left: 6px; right: 6px; top: 50%; height: 1px; }
+  #gimbalPad .cross.v { top: 6px; bottom: 6px; left: 50%; width: 1px; }
+  #gimbalDot { position: absolute; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--sx-accent); left: 50%; top: 50%; transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px var(--sx-accent-glow); }
+  .subcap { font-size: 8px; letter-spacing: 0.2em; color: var(--sx-text-micro); text-align: center;
+    margin-top: 4px; text-transform: uppercase; }
+  .finbars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; flex: 1; }
+  .finbar { text-align: center; }
+  .finbar .ftrack { height: 34px; background: rgba(255,255,255,0.04); border: 1px solid var(--sx-hairline);
+    border-radius: 2px; position: relative; }
+  .finbar .fmid { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--sx-hairline); }
+  .finbar .ffill { position: absolute; left: 3px; right: 3px; top: 50%; height: 0; background: var(--sx-accent);
+    border-radius: 1px; }
+  .finbar .flbl { font-size: 8px; color: var(--sx-text-micro); margin-top: 3px; }
+
+  /* ============ bottom broadcast band ============ */
+  #band { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; padding: 14px 28px 12px;
+    background: linear-gradient(to top, rgba(2,4,8,0.86) 0%, rgba(2,4,8,0.62) 60%, rgba(2,4,8,0) 100%);
+    border-top: 1px solid transparent; }
+
+  /* mission timeline */
+  #timeline { position: relative; height: 48px; margin: 0 4px 4px; }
+  #tlTrack { position: absolute; left: 4%; right: 4%; top: 34px; height: 1.5px; background: var(--sx-track); }
+  #tlProgress { position: absolute; left: 4%; top: 33.25px; height: 3px; width: 0;
+    background: var(--sx-track-fill); box-shadow: 0 0 7px rgba(255,255,255,0.45); border-radius: 2px; }
+  #tlNow { position: absolute; top: 34.75px; left: 0; width: 11px; height: 11px; border-radius: 50%;
+    background: #fff; transform: translate(-50%, -50%);
+    box-shadow: 0 0 4px rgba(255,255,255,0.9), 0 0 12px var(--sx-accent-glow); }
+  .tlMarker { position: absolute; top: 0; transform: translateX(-50%); text-align: center; width: 120px; }
+  .tlMarker .dot { position: absolute; left: 50%; top: 34.75px; width: 8px; height: 8px; border-radius: 50%;
+    transform: translate(-50%, -50%); background: transparent; border: 1.5px solid var(--sx-marker-off); }
+  .tlMarker.on .dot { background: var(--sx-marker-on); border-color: var(--sx-marker-on); }
+  .tlMarker .tick { position: absolute; left: 50%; top: 19px; width: 1px; height: 14px;
+    background: var(--sx-hairline); transform: translateX(-50%); }
+  .tlMarker .mlbl { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+    color: rgba(200,210,220,0.40); line-height: 1.1; }
+  .tlMarker.on .mlbl { color: rgba(240,242,245,0.92); }
+  .tlMarker .msub { font-size: 7.5px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400;
+    color: var(--sx-text-micro); margin-top: 1px; }
+
+  /* big readout row */
+  #readout { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 28px;
+    padding: 2px 6px 0; }
+  .bigblk { display: flex; flex-direction: column; }
+  .bigblk.speed { align-items: flex-end; text-align: right; }
+  .bigblk.alt   { align-items: flex-start; text-align: left; }
+  .bigblk .blbl { font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; font-weight: 400;
+    color: var(--sx-text-label); margin-bottom: 2px; }
+  .bigblk .bval { display: flex; align-items: baseline; gap: 7px; }
+  .bigblk.speed .bval { flex-direction: row; }
+  .bigblk .num { font-size: clamp(38px, 4.4vw, 62px); font-weight: 300; line-height: 0.96;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.5px; color: #fff; text-shadow: var(--sx-num-glow); }
+  .bigblk .unit { font-size: 13px; font-weight: 300; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--sx-text-dim); }
+
+  #centerClock { text-align: center; padding-bottom: 4px; }
+  #metClock { font-family: var(--sx-font-mono); font-size: clamp(26px, 3vw, 38px); font-weight: 300;
+    letter-spacing: 0.06em; font-variant-numeric: tabular-nums; color: #fff; text-shadow: var(--sx-num-glow); }
+  #phaseName { font-size: 8px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 400;
+    color: var(--sx-text-micro); margin-top: 3px; }
+
+  /* transport / scrub controls */
+  #transport { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 0 6px; }
+  #transport button { background: transparent; color: rgba(255,255,255,0.72);
+    border: 1px solid rgba(255,255,255,0.10); border-radius: 2px; padding: 5px 10px;
+    font-family: var(--sx-font-display); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.1s; }
+  #transport button:hover { border-color: var(--sx-accent-border); color: #fff; }
+  #transport button.active { background: var(--sx-accent-tint); color: #fff; border-color: var(--sx-accent-border); }
+  #scrub { flex: 1; accent-color: var(--sx-accent); height: 2px; }
+  #tlabel { font-family: var(--sx-font-mono); font-size: 11px; color: var(--sx-text-dim); min-width: 104px;
+    text-align: right; font-variant-numeric: tabular-nums; }
+  .seg { display: flex; gap: 4px; }
+
+  .hint { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); font-size: 10px;
+    letter-spacing: 0.08em; color: var(--sx-text-micro); opacity: 0.8; z-index: 5; text-transform: uppercase; }
+  #credit { position: fixed; right: 28px; top: 196px; font-size: 9px; letter-spacing: 0.04em;
+    color: var(--sx-text-micro); opacity: 0.85; display: none; max-width: 220px; text-align: right; z-index: 5; }
+
+  @media (max-width: 980px) {
+    #octaweb { right: 18px; transform: scale(.82); transform-origin: top right; }
+  }
+
+  /* loader / drop */
+  #loader { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; background: var(--sx-bg); z-index: 50; text-align: center; }
+  #loader.hidden { display: none; }
+  #drop { padding: 28px 40px; border: 1px dashed var(--sx-hairline); border-radius: 4px; color: var(--sx-text-dim);
+    font-size: 13px; letter-spacing: 0.04em; }
+  #drop b { color: var(--sx-accent); font-weight: 500; }
+  #loader input { display: none; }
+  .pill { color: var(--sx-accent); cursor: pointer; text-decoration: underline; }
+  #err { color: #ff5d6c; font-size: 12px; max-width: 520px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- top-left: engineering telemetry -->
+<div id="eng-col">
+  <div class="hdr"><span class="dot"></span>Booster · Stage 1</div>
+  <div class="erow"><span class="k">altitude</span><span class="v" id="vAlt">— m</span></div>
+  <div class="erow"><span class="k">speed</span><span class="v" id="vSpd">— m/s</span></div>
+  <div class="erow"><span class="k">vertical</span><span class="v" id="vVert">— m/s</span></div>
+  <div class="erow"><span class="k">downrange</span><span class="v" id="vDr">— m</span></div>
+  <div class="erow"><span class="k">mass</span><span class="v" id="vMass">— t</span></div>
+  <div class="erow"><span class="k">mach</span><span class="v" id="vMach">—</span></div>
+  <div class="erow"><span class="k">tilt</span><span class="v" id="vTilt">— °</span></div>
+  <div class="erow"><span class="k">thrust</span><span class="v" id="vThrust">— kN</span></div>
+  <div class="erow"><span class="k">twr</span><span class="v" id="vTwr">—</span></div>
+  <div><span id="phaseTag">—</span></div>
+</div>
+
+<!-- top-right: octaweb engine status -->
+<div id="octaweb">
+  <div class="cap">Octaweb · 9× Merlin 1D</div>
+  <svg id="octSvg" viewBox="0 0 100 100"></svg>
+  <div id="octThrottle">—<small>throttle</small></div>
+</div>
+
+<!-- mid-left: actuators -->
+<div id="actuators" class="panel">
+  <h2>Actuators</h2>
+  <div class="gimbalWrap">
+    <div>
+      <div id="gimbalPad">
+        <div class="cross h"></div><div class="cross v"></div><div id="gimbalDot"></div>
+      </div>
+      <div class="subcap">TVC gimbal</div>
+    </div>
+    <div style="flex:1">
+      <div class="finbars" id="finbars"></div>
+      <div class="subcap">grid fins (δ)</div>
+    </div>
+  </div>
+</div>
+
+<!-- bottom broadcast band -->
+<div id="band">
+  <div id="timeline">
+    <div id="tlTrack"></div>
+    <div id="tlProgress"></div>
+    <div id="tlMarkers"></div>
+    <div id="tlNow"></div>
+  </div>
+  <div id="readout">
+    <div class="bigblk speed">
+      <div class="blbl">Speed</div>
+      <div class="bval"><span class="num" id="bigSpeed">—</span><span class="unit">km/h</span></div>
+    </div>
+    <div id="centerClock">
+      <div id="metClock">T+00:00</div>
+      <div id="phaseName">—</div>
+    </div>
+    <div class="bigblk alt">
+      <div class="blbl">Altitude</div>
+      <div class="bval"><span class="num" id="bigAlt">—</span><span class="unit" id="bigAltUnit">km</span></div>
+    </div>
+  </div>
+  <div id="transport">
+    <div class="seg">
+      <button id="btnPlay">⏸ Pause</button>
+      <button id="btnReset">⟲ Reset</button>
+    </div>
+    <input type="range" id="scrub" min="0" max="1000" value="0" />
+    <span id="tlabel">0.0 / 0.0 s</span>
+    <div class="seg" id="speeds">
+      <button data-s="0.25">0.25×</button>
+      <button data-s="0.5">0.5×</button>
+      <button data-s="1" class="active">1×</button>
+      <button data-s="2">2×</button>
+      <button data-s="4">4×</button>
+    </div>
+    <div class="seg" id="cams">
+      <button data-cam="orbit" class="active">Orbit</button>
+      <button data-cam="chase">Chase</button>
+      <button data-cam="pad">Pad</button>
+    </div>
+  </div>
+</div>
+
+<div class="hint">drag to orbit · scroll to zoom · space play/pause · ←/→ step · C camera</div>
+<div id="credit"></div>
+
+<div id="loader">
+  <div id="drop">
+    Loading <b>replay.json</b> …<br />
+    <span style="font-size:12px">served file not found? <span class="pill" id="pick">choose a replay.json</span> or drop it here</span>
+    <input type="file" id="file" accept="application/json,.json" />
+  </div>
+  <div id="err"></div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

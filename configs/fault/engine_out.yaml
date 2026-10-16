@@ -1,0 +1,5 @@
+# Engine-out fault (one engine off); engine_out_idx must be < n_engines.
+tvc_bias: [0.0, 0.0]
+thrust_scale: 1.0
+fin_lock: [0.0, 0.0, 0.0, 0.0]
+engine_out_idx: 7 # ring engine #7 out (requires n_engines > 7)

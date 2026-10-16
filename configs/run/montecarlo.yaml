@@ -1,0 +1,5 @@
+# Closed-loop Monte Carlo via CPU multiprocessing (1 closed-loop rollout per worker).
+mode: montecarlo
+run_id: mc_${now:%Y%m%d_%H%M%S}
+n_episodes: 32
+n_workers: 4 # tune for throughput (Windows spawn caveats)

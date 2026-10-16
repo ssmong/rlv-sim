@@ -1,0 +1,3 @@
+# Perfect-state navigation (truth pass-through) — the deterministic baseline nav.
+law:
+  _target_: gnc.navigation.identity.build

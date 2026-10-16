@@ -1,0 +1,8 @@
+# OU mean wind + von Karman turbulence (anisotropic, MIL-HDBK-1797A rational approx). Physical -5/3
+# (Kolmogorov) high-freq rolloff; down-axis (2) mean forced to 0. Higher fidelity than dryden.
+model: von_karman
+mean0: [5.0, 0.0, 0.0] # initial mean wind NED [m/s] (down-axis mean forced to 0)
+ou_tau: 100.0 # OU mean-wind correlation time [s]
+ou_sigma: [3.0, 3.0, 1.0] # OU mean-wind stationary std per axis [m/s]
+turb_L: [400.0, 400.0, 100.0] # turbulence length scales per axis [m]
+turb_sigma: [2.0, 2.0, 1.0] # turbulence intensities per axis [m/s]

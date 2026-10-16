@@ -1,0 +1,9 @@
+# @package _global_
+# REAL preset: all laddered plant modules at highest-fidelity tier (turbulence, layered atmosphere,
+# back-pressure, nonlinear servos, slosh). Apply with +fidelity=real.
+defaults:
+  - override /environment/wind: dryden
+  - override /environment/atmosphere: ussa_poly
+  - override /plant/thrust: backpressure
+  - override /plant/actuator: realistic
+  - override /plant/slosh: springmass

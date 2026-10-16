@@ -1,0 +1,2 @@
+# Simplified actuator: linear lags only (1st-order throttle + 2nd-order servos), no rate limits / RCS deadband / per-fin lock; deep-throttle floor + flameout kept. Params in vehicle.actuator.
+model: simplified

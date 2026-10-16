@@ -1,0 +1,39 @@
+# Linear nominal body aero (Jung 2025 eqs 5-7); guidance variant / model-error study, NOT the plant truth (aero=table).
+model: linear
+backend: analytic # generate the table from coeffs (vs `file`: load an .npz AEDB)
+
+grid:
+  n_alpha: 19
+  n_mach: 16
+  alpha_max_deg: 90.0
+  mach_min: 0.0
+  mach_max: 4.0
+
+coeffs:
+  cd_base: 1.0
+  cd_transonic: 0.9
+  cd_hyper: 0.0 # disabled: the linear guidance model keeps cd0 flat above transonic
+  hyper_mach: 2.5 # sigmoid center [Mach] (inert while cd_hyper=0)
+  hyper_width: 1.0 # sigmoid width [Mach] (inert while cd_hyper=0)
+  cd_alpha: 2.0
+  cn_alpha: 2.5
+  xcp_frac_base: 0.70
+  xcp_frac_alpha: -0.05
+  transonic_mach: 1.0
+  transonic_width: 0.5
+
+fins:
+  n_fins: 4
+  fin_area: 2.0
+  fin_cla: 2.0
+  fin_cd0: 0.1
+  fin_radius: 2.0
+  fin_x: -3.0
+  fin_stall_deg: 25.0
+  fin_transonic_mach: 1.0
+  fin_phase_deg: 0.0 # mount phase: 0 deg => "+" layout
+  incremental: false # analytic component model (not a body-table fin increment)
+
+linear:
+  cla: 2.0
+  cda: 1.0

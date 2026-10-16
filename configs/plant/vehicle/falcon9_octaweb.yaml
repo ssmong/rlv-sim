@@ -1,0 +1,47 @@
+# Falcon-9 stage-1, 9-engine OCTAWEB cluster. Geometry is public-approximate, not flight data. Body-x: origin at nose, +x toward nose, aft NEGATIVE (core.frames).
+massprops_model: dual_tank
+
+geom:
+  s_ref: 10.52 # pi*r^2, r=1.83 m (F9 dia 3.66 m)
+  d_ref: 3.66 # real F9 S1 diameter
+  length: 42.0
+  x_eng: -42.0
+  fwd_axis: [-1.0, 0.0, 0.0]
+
+mass:
+  m_dry: 25000.0
+  m_wet: 50000.0
+  x_cg_dry: -30.0
+  x_cg_wet: -22.0
+  I_dry: [43000.0, 3.7e6, 3.7e6]
+  I_wet: [85000.0, 7.4e6, 7.4e6]
+  cg_lateral: [0.0, 0.0] # [y,z] CG offset off the body x-axis [m] (default symmetric)
+  inertia_products: [0.0, 0.0, 0.0] # [Ixy, Ixz, Iyz] products of inertia [kg m^2]
+
+# 9 engines: center + 8-ring (octaweb). Only the CENTER gimbals (landing/entry burns).
+engines:
+  layout: octaweb
+  n_engines: 9
+  x_eng: -42.0
+  ring_radius: 1.7 # [m] APPROXIMATE
+  gimbal_mask: [1, 0, 0, 0, 0, 0, 0, 0, 0] # center gimbals (Ng=1); ring fixed
+  thrust_vac: 981000.0 # per-engine Merlin-1D VACUUM thrust [N] (845 kN is SL, not vacuum)
+  throttle_min: 0.4
+  isp: 311.0 # Merlin-1D vacuum
+  nozzle_exit_area: 0.9 # effective back-pressure area [m^2], Isp_sl-matched (see falcon9_stage1.yaml)
+
+actuator:
+  tvc_omega: 37.7
+  tvc_zeta: 0.707
+  tvc_rate_max_rad_s: 0.35
+  tvc_deflection_max_rad: 0.14
+  throttle_tau: 0.25
+  throttle_rate_max: 1.0 # approximately 1 s over the throttle band
+  fin_omega: 18.8
+  fin_zeta: 0.7
+  fin_rate_max_rad_s: 0.52
+  fin_deflection_max_rad: 0.35
+  rcs_thrust: 2000.0
+  rcs_arm: 1.85
+  rcs_isp: 60.0
+  rcs_fuel0: 200.0

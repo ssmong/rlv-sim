@@ -1,0 +1,11 @@
+# Copy-me powered-descent guidance config — pairs with gnc/guidance/template.py.
+# Copy this file + that module, rename, add your law's own keys, select with `gnc/guidance=<name>`.
+# No shared base: list exactly the keys your law reads (the convex method carries its own convex_*).
+powered_descent_method: template # label (logged in replay)
+attitude_tilt_max_deg: 15.0 # thrust-pointing cone cap [deg]; the framework builds q_ref within this
+# Aero-descent steering (engine-off coast): read by the FIXED framework aero-coast law, not the
+# template law below — every guidance config must carry these so build can dot-access them.
+aero_steer_gain: 0.0
+aero_tilt_max_deg: 10.0
+law:
+  _target_: gnc.guidance.template.build

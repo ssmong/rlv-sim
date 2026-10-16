@@ -1,0 +1,5 @@
+# Partial-thrust fault (reduced engine performance).
+tvc_bias: [0.0, 0.0]
+thrust_scale: 0.85 # 15% thrust loss
+fin_lock: [0.0, 0.0, 0.0, 0.0]
+engine_out_idx: null # no engine-out in this fault model

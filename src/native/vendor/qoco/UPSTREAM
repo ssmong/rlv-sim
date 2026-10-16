@@ -1,0 +1,5 @@
+QOCO v0.3.2
+https://github.com/qoco-org/qoco
+commit 598de4e1aeaa9c522b3bc5bb1a56f3d7287dc14f
+
+Only the generic CPU solver sources required by the native extension are vendored.

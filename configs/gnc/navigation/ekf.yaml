@@ -1,0 +1,3 @@
+# Selecting this configuration raises NotImplementedError because no EKF is implemented.
+law:
+  _target_: gnc.navigation.ekf_stub.build

@@ -1,0 +1,14 @@
+# GNC control allocation (gnc.allocation): maps PD body-torque tau to actuator deflections.
+# powered_fin_mode — how grid fins join pitch/yaw torque:
+#   blended     : weighted-pseudo-inverse split per axis; q̄→0 fades fins, engine-off fades gimbal (no hard switch)
+#   phase_gated : gimbal while powered, fins during engine-off aerodynamic flight
+powered_fin_mode: blended # 'off' is YAML boolean False — hence the explicit names
+blend_w_gimbal: 1.0 # quadratic deflection penalty on gimbal share — raise to prefer fins
+blend_w_fin: 1.0
+
+# Fin dynamic-pressure lockout [Pa]: below this q̄ grid fins are commanded to ZERO. null disables.
+fin_qbar_lockout_pa: 1000.0
+
+# RCS (cold-gas roll + pitch/yaw residual). Disabled by default: it is the only roll authority,
+# so with it off ROLL IS UNCONTROLLED (benign for the axisymmetric roll-free landing). true restores it.
+rcs_enabled: false

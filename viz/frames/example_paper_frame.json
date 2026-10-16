@@ -1,0 +1,31 @@
+{
+  "id": "example_paper_trajectory",
+  "short": "PAPER-T",
+  "name": "Example paper trajectory frame",
+  "citation": "Author (Year, Journal)",
+  "description": "Example import: xT follows velocity, yT is the upward in-plane axis, and zT completes a right-handed frame.",
+  "handedness": "right",
+  "axes": [
+    {
+      "id": "x",
+      "label": "x",
+      "subscript": "T",
+      "name": "trajectory direction",
+      "direction": { "ref": "velocity" }
+    },
+    {
+      "id": "y",
+      "label": "y",
+      "subscript": "T",
+      "name": "trajectory-plane up",
+      "direction": { "project": [{ "ref": "up" }, { "axis": "x" }] }
+    },
+    {
+      "id": "z",
+      "label": "z",
+      "subscript": "T",
+      "name": "trajectory-plane normal",
+      "direction": { "cross": [{ "axis": "x" }, { "axis": "y" }] }
+    }
+  ]
+}

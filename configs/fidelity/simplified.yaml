@@ -1,0 +1,8 @@
+# @package _global_
+# SIMPLIFIED preset: all laddered plant modules at simplified tier. Apply with +fidelity=simplified.
+defaults:
+  - override /environment/wind: steady
+  - override /environment/atmosphere: exp
+  - override /plant/thrust: sea_level
+  - override /plant/actuator: simplified
+  - override /plant/slosh: pendulum

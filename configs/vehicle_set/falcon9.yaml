@@ -1,0 +1,8 @@
+# @package _global_
+# Falcon-style analytic-aero, single-engine configuration set.
+defaults:
+  - override /plant/vehicle: falcon9_stage1
+  - override /plant/aero: table
+  - override /environment/atmosphere: exp
+  - override /scenario: pdg
+  - override /gnc/scheduler: altitude

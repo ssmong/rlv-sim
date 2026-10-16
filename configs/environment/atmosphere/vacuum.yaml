@@ -1,0 +1,9 @@
+# Vacuum atmosphere: rho=p=0 => no aero force and no thrust back-pressure; gravity still applies.
+model: vacuum
+rho0: 0.0 # no air
+scale_height: 8500.0 # [m] (unused; schema parity)
+a_sound: 340.3 # [m/s] (keeps Mach finite; rho=0 => no aero)
+g0: 9.80665 # [m/s^2] gravity still acts
+p_sea: 0.0 # no ambient pressure => no back-pressure
+delta_T: 0.0 # [K] (unused; schema parity)
+density_scale: 1.0 # (unused; rho=0 => no aero; schema parity)

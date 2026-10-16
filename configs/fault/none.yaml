@@ -1,0 +1,5 @@
+# Healthy actuators (truth-only faults default off).
+tvc_bias: [0.0, 0.0] # gimbal stuck/bias [pitch, yaw] [rad]
+thrust_scale: 1.0 # partial-thrust multiplier (1 = healthy)
+fin_lock: [0.0, 0.0, 0.0, 0.0] # per-fin lock (1 = locked)
+engine_out_idx: null # no engine-out in this fault model

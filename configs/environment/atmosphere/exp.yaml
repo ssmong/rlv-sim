@@ -1,0 +1,9 @@
+# Exponential atmosphere; in-band a is T-derived (a = sqrt(gamma*R*T(h))).
+model: exp
+rho0: 1.225 # sea-level density [kg/m^3]
+scale_height: 8500.0 # [m]
+a_sound: 340.3 # sea-level reference [m/s] (in-band a is T-derived)
+g0: 9.80665 # [m/s^2]
+p_sea: 101325.0 # sea-level pressure (thrust back-pressure) [Pa]
+delta_T: 0.0 # ISA temperature offset [K] (ussa_poly only); 0 = standard day
+density_scale: 1.0 # density dispersion multiplier; 1 = nominal

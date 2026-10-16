@@ -1,0 +1,57 @@
+# SALTO/Themis T3 descent demonstrator, AEDB-consistent reference geometry.
+# Body-x: origin at nose, +x toward nose, aft NEGATIVE (core.frames).
+massprops_model: prescribed
+
+geom:
+  # length 29 m, 3.5 m airframe (Marwege/Deimos FAR-2025). AEDB coefficients are normalized on
+  # 3.70 m / 10.752 m^2 (aero workbook, not the papers), so reconstruction uses that basis.
+  s_ref: 10.752
+  d_ref: 3.70
+  length: 29.0
+  x_eng: -29.0
+  fwd_axis: [-1.0, 0.0, 0.0]
+
+mass:
+  m_dry: 24000.0 # ~24 t (Deimos FAR-2025)
+  # entry-interface mass = m_dry + 12 t ASSUMED descent reserve. NOT launch wet mass (Deimos:
+  # ~55 t total propellant => ~79 t lift-off); the reserve kept for descent is our assumption.
+  m_wet: 36000.0
+  x_cg_dry: -20.5 # aft, engine-dominated. CoG not published -> ASSUMED
+  # linear model, reserve centroid x_prop=-16 m (mid-body, ASSUMED ~+/-2 m; layout unpublished):
+  # (24*(-20.5)+12*(-16))/36 = -19.0. Descent CoG retreats -19.0 (entry) -> -20.5 (burnt).
+  x_cg_wet: -19.0
+  I_dry: [41070.0, 1.61472e6, 1.61472e6]
+  # I_wet about the wet CoG (inertia not published -> derived): 1.61472e6 + 54000 + (108000 +
+  # 9187.5 thin-disk own) = 1.7859075e6; Ixx = 41070 + 0.5*12e3*1.75^2 = 59445.
+  I_wet: [59445.0, 1.7859075e6, 1.7859075e6]
+  cg_lateral: [0.0, 0.0]
+  inertia_products: [0.0, 0.0, 0.0]
+
+engines:
+  # Center + 2 lateral Prometheus (3, triad; Deimos/Marwege FAR-2025). R2 uses [1,2], R3 uses [0].
+  # Prometheus perf from Marwege "Scalability" slide 8.
+  layout: triad
+  n_engines: 3
+  x_eng: -29.0
+  ring_radius: 1.20 # lateral offset, ASSUMED
+  gimbal_mask: [1, 1, 1]
+  thrust_vac: 1259000.0 # 1259.287 kN vac
+  throttle_min: 0.30 # ASSUMED
+  isp: 355.0 # 355.04 s vac
+  nozzle_exit_area: 1.13 # Ø1.2 m exit
+
+actuator:
+  tvc_omega: 37.7
+  tvc_zeta: 0.707
+  tvc_rate_max_rad_s: 0.35
+  tvc_deflection_max_rad: 0.14
+  throttle_tau: 0.25
+  throttle_rate_max: 1.0
+  fin_omega: 18.8
+  fin_zeta: 0.7
+  fin_rate_max_rad_s: 0.52
+  fin_deflection_max_rad: 0.35
+  rcs_thrust: 1500.0
+  rcs_arm: 1.85
+  rcs_isp: 60.0
+  rcs_fuel0: 100.0

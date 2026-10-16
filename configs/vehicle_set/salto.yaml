@@ -1,0 +1,8 @@
+# @package _global_
+# SALTO/T3 integrated configuration set: vehicle + aero + atmosphere + scenario + scheduler.
+defaults:
+  - override /plant/vehicle: salto_t3
+  - override /plant/aero: salto_table
+  - override /environment/atmosphere: ussa_poly
+  - override /scenario: salto_aero_to_landing
+  - override /gnc/scheduler: salto

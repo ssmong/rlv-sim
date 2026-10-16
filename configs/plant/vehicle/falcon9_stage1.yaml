@@ -1,0 +1,48 @@
+# Falcon-9 stage-1-class booster (public approximate values). Body-x: origin at nose, +x toward nose, aft NEGATIVE (core.frames).
+massprops_model: dual_tank # dual_tank (1/m CG + quadratic parallel-axis inertia) | prescribed (linear, low-fidelity)
+
+geom:
+  s_ref: 10.52 # pi*r^2, r=1.83 m [m^2] (F9 dia 3.66 m)
+  d_ref: 3.66 # diameter [m] (real F9 S1)
+  length: 42.0 # booster length [m]
+  x_eng: -42.0 # gimbal point at base [m] (aft of nose)
+  fwd_axis: [-1.0, 0.0, 0.0] # engine-forward aero axis (base leads in descent)
+
+mass:
+  m_dry: 25600.0 # landing-config inert mass (legs + grid fins + residuals) [kg]; bare structural ~22.2 t
+  m_wet: 50000.0 # entry-interface mass w/ landing reserve [kg]
+  x_cg_dry: -30.0 # CG aft (engines heavy at base) when empty [m]
+  x_cg_wet: -22.0 # CG higher when tanks full [m]
+  I_dry: [43000.0, 3.7e6, 3.7e6] # [Ixx(roll), Iyy, Izz] [kg m^2]
+  I_wet: [85000.0, 7.4e6, 7.4e6]
+  cg_lateral: [0.0, 0.0] # [y,z] CG offset off the body x-axis [m] (default symmetric)
+  inertia_products: [0.0, 0.0, 0.0] # [Ixy, Ixz, Iyz] products of inertia [kg m^2]
+
+# Engines. DEFAULT = single centerline engine (landing burn); octaweb (9) = falcon9_octaweb.yaml.
+engines:
+  layout: single # single | octaweb
+  n_engines: 1
+  x_eng: -42.0 # gimbal point at base [m] (= geom.x_eng)
+  gimbal_mask: [1] # center engine gimbals (Ng=1)
+  thrust_vac: 981000.0 # per-engine vacuum thrust [N] (single Merlin-1D-class)
+  throttle_min: 0.4 # per-engine deep-throttle floor
+  isp: 311.0 # [s] Merlin-1D vacuum
+  nozzle_exit_area: 0.9 # effective back-pressure area [m^2] (Isp_sl-matched ~282 s, not geometric)
+
+actuator:
+  # cluster-common servo/throttle/RCS (per-engine thrust is in `engines:` above)
+  tvc_omega: 37.7 # 2*pi*6 [rad/s]
+  tvc_zeta: 0.707
+  tvc_rate_max_rad_s: 0.35 # ~20 deg/s
+  tvc_deflection_max_rad: 0.14 # ~8 deg
+  throttle_tau: 0.25
+  throttle_rate_max: 1.0 # full throttle band in ~1 s (Merlin)
+  fin_omega: 18.8 # 2*pi*3 [rad/s]
+  fin_zeta: 0.7
+  fin_rate_max_rad_s: 0.52 # ~30 deg/s
+  fin_deflection_max_rad: 0.35 # ~20 deg
+  # RCS cold-gas (roll authority + low-q attitude)
+  rcs_thrust: 2000.0 # per-axis force [N]
+  rcs_arm: 1.85 # moment arm [m]
+  rcs_isp: 60.0 # cold-gas [s]
+  rcs_fuel0: 200.0 # budget [kg]

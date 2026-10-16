@@ -1,0 +1,5 @@
+# Stuck/biased gimbal fault.
+tvc_bias: [0.035, 0.0] # ~2 deg pitch bias [rad]
+thrust_scale: 1.0
+fin_lock: [0.0, 0.0, 0.0, 0.0]
+engine_out_idx: null # no engine-out in this fault model

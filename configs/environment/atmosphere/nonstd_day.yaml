@@ -1,0 +1,10 @@
+# Non-standard-day atmosphere: ISA-76 (ussa_poly) + a sea-level temperature offset and a density
+# dispersion multiplier. delta_T=0, density_scale=1 reduces to environment/atmosphere=ussa_poly.
+model: ussa_poly
+rho0: 1.225
+scale_height: 8500.0
+a_sound: 340.3 # sea-level reference [m/s] (a derived from layer temperature)
+g0: 9.80665
+p_sea: 101325.0
+delta_T: 20.0 # hot day: +20 K shifts the whole ISA temperature profile => lower density, faster sound
+density_scale: 1.0 # multiplicative density dispersion (1.0 = nominal; e.g. 1.1 for a +10% density draw)

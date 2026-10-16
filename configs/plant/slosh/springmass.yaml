@@ -1,0 +1,7 @@
+# Equivalent spring-mass slosh, 2 planes (optional). Fixed (always-positive) stiffness; use 'pendulum' for accel-dependent regime. R=1.83 m.
+model: springmass
+slosh_mass: 300.0 # first-mode participating mass [kg] of the low-fill landing residual (m1 <= residual liquid); re-tune with omega for higher-fill legs.
+pendulum_length: 1.0 # unused by springmass
+omega: 3.0 # first-mode natural freq [rad/s], ~3.0 (0.48 Hz) at landing accel.
+zeta: 0.02 # ring-baffled tank damping (smooth-wall ~0.001-0.002; baffled 0.01-0.05 per Dodge).
+x_attach: -20.0 # tank centroid body-x [m]; +2 m fwd of wet CG. Offset gives rotational excitation.

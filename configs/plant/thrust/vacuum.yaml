@@ -1,0 +1,2 @@
+# Vacuum thrust (ideal): F = throttle*T_vac, altitude-independent. Orthogonal to the atmosphere group (drag), so pair with real atmosphere for a diagnostic.
+model: vacuum

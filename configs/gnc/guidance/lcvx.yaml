@@ -1,0 +1,47 @@
+# Single-phase LCvx powered-descent guidance (lossless convexification, vacuum plan).
+powered_descent_method: lcvx # label (logged in replay)
+law:
+  _target_: gnc.guidance.convex.build_lcvx
+
+# Aero-descent steering (engine-off coast).
+aero_steer_gain: 0.0
+aero_tilt_max_deg: 10.0
+
+# Convex powered-descent solve.
+convex_solver: CLARABEL # LCvx SOCP backend (QOCO available for comparison runs)
+convex_nodes: 20        # fixed N (free-tf mode)
+convex_dt: null         # null => fixed-N grid (dt = tf_go/N); 0.5 => fixed-dt integer-N
+convex_nodes_max: 120   # N cap for the fixed-dt search
+convex_target_ned: [0.0, 0.0, 0.0]
+convex_drag_cd: 1.0     # plan-side drag coefficient (plant tables stay the truth model); 0 disables
+
+# Plan constraints.
+attitude_tilt_max_deg: 15.0          # thrust-pointing cone == attitude/tracking cap (gimbal is torque only)
+convex_glideslope_deg: 20.0          # approach cone from horizontal about the target
+convex_thrust_rate_max_nps: 981000.0 # thrust-MAGNITUDE rate cap [N/s] (throttle_rate_max x thrust_vac); null = off
+convex_slew_rate_max_mps3: null      # u-vector rate SOC ||u_{k+1}-u_k||<=rate*dt; null = off
+
+# Touchdown-time policy.
+convex_replan: false                   # solve once at ignition; track the committed plan
+convex_tf_min_s: 0.5                 # free-tf search lower bound [s]
+convex_tf_freeze_s: 2.0              # tf_go below this: fly out the committed plan
+convex_tf_search_iters: 8            # free-tf line-search iterations
+convex_reanchor_min_alt_m: 20.0      # below this alt: re-anchoring off (avoids hover loops)
+convex_tf_search_grid_fallback: true # scan a coarse tf grid if the line search fails
+
+# Terminal boundary.
+convex_terminal_slack: false      # hard terminal; no slack relaxation
+convex_terminal_vz_max_mps: null  # exact v[N]=0; a positive value enables a sink-speed window
+convex_terminal_upright: true     # w_xy[N]=0: final node may not tilt
+convex_terminal_pos_weight: 100.0 # exact-penalty W (slack mode only)
+convex_terminal_vel_weight: 100.0
+
+# Tracking + engine cutoff.
+convex_tracking_k_r: 1.0
+convex_tracking_k_v: 4.0
+landing_cutoff_impact_mps: 0.0 # disabled: the planned terminal state is not rescued by early cutoff
+
+# SOCP variable scales (conditioning; W=100 above is calibrated in these units).
+convex_scale_pos: 1000.0
+convex_scale_vel: 100.0
+convex_scale_accel: 40.0

@@ -1,0 +1,41 @@
+# Truth body aero = coefficient lookup table + grid-fin component model.
+model: table
+backend: analytic # generate the table from coeffs (vs `file`: load an .npz AEDB)
+
+grid:
+  n_alpha: 19 # total-AoA samples 0..alpha_max
+  n_mach: 33 # Mach samples; 0.25 spacing with a node EXACTLY at M=1 so the lookup hits the transonic peak
+  alpha_max_deg: 90.0
+  mach_min: 0.0
+  mach_max: 8.0 # entry ~Mach 5.7, so a 4.0 ceiling would edge-clamp
+
+# Analytic JSR-2020-style parameterization baked into the table (aero_table.generate_table).
+coeffs:
+  cd_base: 1.0 # subsonic base-first axial drag
+  cd_transonic: 0.9 # transonic drag-rise peak (=> 1.9 at M=1, node-aligned for exact lookup)
+  cd_hyper: 0.8 # => cd0 -> cd_base+cd_hyper = 1.8 at high Mach; without it cd0 wrongly plateaus to 1.0 above ~M2.5
+  hyper_mach: 2.5 # sigmoid center of the hypersonic rise
+  hyper_width: 1.0 # sigmoid width [Mach]
+  cd_alpha: 2.0 # crossflow drag growth ~ cd_alpha*sin^2(alpha)
+  cn_alpha: 2.5 # normal-force slope (=> dC_L/dalpha>0 at 0)
+  xcp_frac_base: 0.70 # CP at 0.70*length aft of nose (=> CP ahead of CG when wet => unstable)
+  xcp_frac_alpha: 0.12 # full CP-forward shift at 90° AoA; 0 at alpha=0 so instability sign there is unchanged
+  transonic_mach: 1.0
+  transonic_width: 0.5
+
+fins:
+  n_fins: 4
+  fin_area: 2.0 # per-fin reference area [m^2]
+  fin_cla: 2.0 # fin lift-curve slope [1/rad]
+  fin_cd0: 0.1
+  fin_radius: 2.0 # mount radius [m]
+  fin_x: -3.0 # mount axial position (near top) [m]
+  fin_stall_deg: 25.0 # smooth tanh stall
+  fin_transonic_mach: 1.0 # grid-fin choking drag-rise center
+  fin_phase_deg: 0.0 # mount phase: 0 deg => "+" layout
+  incremental: false # analytic component model (not a body-table fin increment)
+
+# Linear nominal aero (used only when aero=linear); kept here so build can read it.
+linear:
+  cla: 2.0
+  cda: 1.0

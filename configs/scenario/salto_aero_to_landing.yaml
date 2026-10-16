@@ -1,0 +1,30 @@
+# SALTO/T3 post-R2 aerodynamic descent -> landing burn.
+# Starts after the re-entry burn so the M<=3 AEDB is the primary aerodynamic model, not a clamp.
+name: salto_aero_to_landing
+start_phase: aero
+ic:
+  r_ned: [0.0, 0.0, -30000.0]
+  v_ned: [0.0, 0.0, 850.0]
+  roll_deg: 0.0
+  pitch_deg: 90.0
+  yaw_deg: 0.0
+  w_body: [0.0, 0.0, 0.0]
+  m: 36000.0
+  throttle0: 0.0
+
+dispersion:
+  enable: false
+  pos_sigma: [200.0, 200.0, 200.0]
+  vel_sigma: [30.0, 30.0, 30.0]
+
+horizon:
+  t_max: 180.0
+  ctrl_dt: 0.05
+  nav_dt: 0.02
+  guidance_dt: 1.0
+  log_dt: 0.2
+
+success:
+  pos_tol: 10.0
+  speed_tol: 5.0
+  tilt_tol_deg: 15.0

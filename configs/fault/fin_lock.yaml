@@ -1,0 +1,5 @@
+# Locked grid-fin fault (one fin frozen).
+tvc_bias: [0.0, 0.0]
+thrust_scale: 1.0
+fin_lock: [1.0, 0.0, 0.0, 0.0] # fin 0 locked at its current deflection
+engine_out_idx: null # no engine-out in this fault model

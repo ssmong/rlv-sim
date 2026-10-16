@@ -1,0 +1,11 @@
+# SALTO/T3 phase scheduler. R2 uses the two lateral Prometheus engines; R3 uses the center engine.
+type: altitude
+
+powered_brake: false
+reentry_engines: [1, 2]
+brake_engines: [1, 2]
+landing_engines: [0]
+
+reentry_end_altitude: 30000.0
+switch_altitude: 2000.0
+brake_end_altitude: 800.0

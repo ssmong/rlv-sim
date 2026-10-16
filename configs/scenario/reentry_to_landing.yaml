@@ -1,0 +1,31 @@
+# Full post-flip sequence: reentry burn -> aero descent -> landing burn (use vehicle=falcon9_octaweb).
+# IMPORTANT: run with environment/atmosphere=ussa_poly (CLI convention) — exp overpredicts density
+# ~3.4x at 60 km, badly over-margining entry dynamic pressure.
+name: reentry_to_landing
+start_phase: reentry
+ic:
+  r_ned: [0.0, 0.0, -60000.0] # 60 km altitude (entry interface, post-flip)
+  v_ned: [0.0, 0.0, 1800.0] # ~Mach 6 descent, engine-first
+  roll_deg: 0.0
+  pitch_deg: 90.0 # nose-up (engine-down) => engine-first retro
+  yaw_deg: 0.0
+  w_body: [0.0, 0.0, 0.0]
+  m: 50000.0
+  throttle0: 0.0
+
+dispersion:
+  enable: false
+  pos_sigma: [200.0, 200.0, 200.0]
+  vel_sigma: [30.0, 30.0, 30.0]
+
+horizon:
+  t_max: 180.0
+  ctrl_dt: 0.05 # tracking-control tick [s]
+  nav_dt: 0.02 # nav tick [s] (faster than control)
+  guidance_dt: 1.0 # guidance re-solve tick [s] (1 Hz MPC/SOCP re-plan cadence)
+  log_dt: 0.2 # logging downsample [s]
+
+success:
+  pos_tol: 10.0
+  speed_tol: 5.0
+  tilt_tol_deg: 15.0

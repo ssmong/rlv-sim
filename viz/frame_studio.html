@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RLV Frame Studio</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./frame_studio.css" />
+</head>
+<body>
+  <main id="viewport"></main>
+
+  <header class="studioHeader">
+    <div>
+      <span class="eyebrow">RLV geometry tools</span>
+      <h1>Frame Studio</h1>
+    </div>
+    <div class="headerGuide">Drag vehicle to rotate <i></i> Drag empty space to orbit <i></i> Drag an arrow tip to edit its vector <i></i> Click two axes to form a plane</div>
+  </header>
+
+  <aside id="statePanel" class="glassPanel statePanel">
+    <div class="panelTitle">
+      <div><span class="statusDot"></span>Flight state</div>
+    </div>
+
+    <div class="presetRow" id="statePresets" title="Scenario presets replace attitude, ground velocity, and wind. Vehicle position is preserved.">
+      <button type="button" class="active" data-preset="descent">Descent</button>
+      <button type="button" data-preset="crosswind">Crosswind</button>
+      <button type="button" data-preset="vertical">Vertical</button>
+    </div>
+    <section class="controlSection" title="FRD Body axes: +x_B forward, +y_B right, +z_B down. Heading is clockwise from North toward East.">
+      <div class="sectionHeading"><span>Spacecraft attitude</span><output id="attitudeSummary">—</output></div>
+      <div class="shapeControl attitudeModeControl">
+        <span>Attitude edit</span>
+        <div id="attitudeControlMode" title="Direct drag rotates the vehicle in the main view. The 3-axis gimbal uses local Body-axis rings in the lower-right dock.">
+          <button type="button" class="active" data-attitude-mode="direct">Direct drag</button>
+          <button type="button" data-attitude-mode="gimbal">3-axis gimbal</button>
+        </div>
+      </div>
+      <div id="modelCredit" class="modelCredit">Loading Falcon 9 GLB…</div>
+      <label class="rangeControl" title="Body pitch θ_B."><span>Body pitch θ<sub>B</sub></span><input id="pitchInput" type="range" min="-90" max="90" step="0.1" /><input id="pitchValue" class="numberInput" type="number" min="-90" max="90" step="0.1" aria-label="Body pitch in degrees" /></label>
+      <label class="rangeControl" title="Body heading χ_B, clockwise from North toward East."><span>Body heading χ<sub>B</sub></span><input id="yawInput" type="range" min="-180" max="180" step="0.1" /><input id="yawValue" class="numberInput" type="number" min="-180" max="180" step="0.1" aria-label="Body heading in degrees" /></label>
+      <label class="rangeControl" title="Body Euler roll φ_B about +x_B. This is distinct from lift-vector bank σ_L."><span>Body roll φ<sub>B</sub></span><input id="rollInput" type="range" min="-180" max="180" step="0.1" /><input id="rollValue" class="numberInput" type="number" min="-180" max="180" step="0.1" aria-label="Body roll in degrees" /></label>
+      <div class="vectorActions attitudeActions">
+        <button id="alignBodyWithAir" type="button" title="Set x_B parallel to V_A while preserving V_G, V_W, and body roll.">Align x<sub>B</sub> to V<sub>A</sub></button>
+      </div>
+      <div class="derivedAngle" title="Signed rotation from the zero-bank lift direction to −z_W about +x_W."><span>Lift-vector bank σ<sub>L</sub> <small>about V<sub>A</sub></small></span><output id="bankValue">—</output></div>
+      <div class="derivedAngleGrid">
+        <div class="derivedAngle" title="α = atan2(w_B, u_B)."><span>AoA α</span><output id="alphaValue">—</output></div>
+        <div class="derivedAngle" title="β = atan2(v_B, √(u_B² + w_B²)); positive v_B points right."><span>Sideslip β</span><output id="betaValue">—</output></div>
+      </div>
+      <div class="componentHeading" title="Editable air-relative velocity in FRD Body axes. Changes preserve attitude and wind, then reconstruct V_G."><span>Air-relative components</span><small id="airComponentFrame">FRD body axes · m/s</small></div>
+      <div class="vectorComponents aeroComponents">
+        <label><b id="airULabel">u<sub>B</sub></b><input id="airUValue" class="componentNumberInput" type="number" min="-1050" max="1050" step="0.1" aria-label="Air-relative body u in meters per second" /></label>
+        <label><b id="airVLabel">v<sub>B</sub></b><input id="airVValue" class="componentNumberInput" type="number" min="-1050" max="1050" step="0.1" aria-label="Air-relative body v in meters per second" /></label>
+        <label><b id="airWLabel">w<sub>B</sub></b><input id="airWValue" class="componentNumberInput" type="number" min="-1050" max="1050" step="0.1" aria-label="Air-relative body w in meters per second" /></label>
+      </div>
+      <label class="switchControl"><span>Show α/β geometry</span><input id="showAeroGeometryInput" type="checkbox" /><b></b></label>
+    </section>
+
+    <section class="controlSection" title="The blue solid arrow is editable ground-relative velocity V_G. Drag its circular tip to change direction and magnitude in 3D.">
+      <div class="sectionHeading"><span>Ground-relative velocity V<sub>G</sub></span><output id="velocitySummary">—</output></div>
+      <label class="rangeControl"><span>Speed [m/s]</span><input id="speedInput" type="range" min="0" max="900" step="1" /><input id="speedValue" class="numberInput" type="number" min="0" max="900" step="1" aria-label="Ground-relative speed in meters per second" /></label>
+      <label class="rangeControl" title="Flight-path angle γ_V is positive above the local horizontal."><span>Flight-path γ<sub>V</sub></span><input id="gammaInput" type="range" min="-90" max="90" step="0.1" /><input id="gammaValue" class="numberInput" type="number" min="-90" max="90" step="0.1" aria-label="Flight-path angle in degrees" /></label>
+      <label class="rangeControl" title="Course χ_V is clockwise from North toward East."><span>Course χ<sub>V</sub></span><input id="courseInput" type="range" min="-180" max="180" step="0.1" /><input id="courseValue" class="numberInput" type="number" min="-180" max="180" step="0.1" aria-label="Velocity course in degrees" /></label>
+    </section>
+
+    <section class="controlSection" title="The cyan solid arrow is editable wind V_W. Air-relative velocity is V_A = V_G − V_W. Drag the circular tip to edit wind in 3D.">
+      <div class="sectionHeading"><span>Wind velocity V<sub>W</sub></span><output id="windSummary">—</output></div>
+      <div class="vectorComponents">
+        <label>N <input id="windNorthValue" class="componentNumberInput" type="number" min="-150" max="150" step="0.1" aria-label="Wind North component in meters per second" /></label>
+        <label>U <input id="windUpValue" class="componentNumberInput" type="number" min="-150" max="150" step="0.1" aria-label="Wind Up component in meters per second" /></label>
+        <label>E <input id="windEastValue" class="componentNumberInput" type="number" min="-150" max="150" step="0.1" aria-label="Wind East component in meters per second" /></label>
+      </div>
+      <div class="vectorActions">
+        <button id="levelWind" type="button">Zero vertical</button>
+        <button id="calmWind" type="button">Set calm</button>
+      </div>
+    </section>
+
+    <section class="controlSection compactSection" title="Vehicle position relative to the fixed NED origin at the LOS target. D is positive down, so a vehicle above the target has D < 0.">
+      <div class="sectionHeading"><span>Vehicle position · NED</span><output id="positionSummary">—</output></div>
+      <label class="rangeControl" title="Vehicle North coordinate relative to the fixed NED origin."><span>N<sub>V</sub> [m]</span><input id="vehicleNorthInput" type="range" min="-150" max="100" step="1" /><input id="vehicleNorthValue" class="numberInput" type="number" min="-150" max="100" step="1" aria-label="Vehicle North position in meters" /></label>
+      <label class="rangeControl" title="Vehicle East coordinate relative to the fixed NED origin."><span>E<sub>V</sub> [m]</span><input id="vehicleEastInput" type="range" min="-80" max="80" step="1" /><input id="vehicleEastValue" class="numberInput" type="number" min="-80" max="80" step="1" aria-label="Vehicle East position in meters" /></label>
+      <label class="rangeControl" title="Vehicle Down coordinate. Negative values place the vehicle above the NED origin."><span>D<sub>V</sub> [m]</span><input id="vehicleDownInput" type="range" min="-120" max="20" step="1" /><input id="vehicleDownValue" class="numberInput" type="number" min="-120" max="20" step="1" aria-label="Vehicle Down position in meters" /></label>
+      <label class="switchControl"><span>Show NED origin and LOS</span><input id="showTargetInput" type="checkbox" checked /><b></b></label>
+      <div class="vectorActions">
+        <button id="resetPosition" type="button">Reset position</button>
+        <button id="frameTarget" type="button">Frame vehicle + origin</button>
+      </div>
+    </section>
+  </aside>
+
+  <aside id="studioPanel" class="glassPanel studioPanel">
+    <div class="panelTitle" title="Built-in direction frames use Forward-Right-Down axes and match the native C++ transforms. Hover a frame chip for its definition and source.">
+      <div><span class="statusDot violet"></span>Coordinate frames</div>
+      <button id="resetCamera" type="button">Reset view</button>
+    </div>
+
+    <div class="studioRowHead"><span>Visible frames · max 3</span><button id="importFrameButton" class="textButton" type="button">+ Import JSON</button></div>
+    <div id="studioFrameList" class="frameLibrary"></div>
+    <input id="frameImportInput" type="file" accept="application/json,.json" hidden />
+
+    <div class="divider"></div>
+    <div class="studioRowHead"><span>Plane · choose two axes</span><button id="clearStudioPlane" class="textButton" type="button">Clear</button></div>
+    <div id="studioAxisPicker" class="axisPicker"></div>
+    <div id="studioPlaneHint" class="studioPlaneHint"></div>
+
+    <div class="studioRowHead projectionHead"><span>Project onto selected plane</span></div>
+    <div id="projectionSources" class="projectionSources">
+      <button class="active" type="button" data-vector="velocity">V<sub>G</sub></button>
+      <button type="button" data-vector="air">V<sub>A</sub></button>
+      <button type="button" data-vector="wind">V<sub>W</sub></button>
+      <button type="button" data-vector="los">LOS</button>
+      <button type="button" data-vector="body_x">x<sub>B</sub></button>
+    </div>
+    <div id="projectionReadout" class="projectionReadout"></div>
+    <div id="studioStatus" class="studioStatus"></div>
+  </aside>
+
+  <aside id="attitudeGimbalDock" class="attitudeGimbalDock" aria-hidden="true">
+    <div class="gimbalDockHead"><span>Local attitude</span><small>drag a ring</small></div>
+    <div id="attitudeGimbalViewport" class="attitudeGimbalViewport"></div>
+    <div class="gimbalAxisLegend"><span class="gimbalX">x<sub>B</sub></span><span class="gimbalY">y<sub>B</sub></span><span class="gimbalZ">z<sub>B</sub></span></div>
+  </aside>
+
+  <footer class="frameLegend">
+    <span><i class="axisX frameAxisKey"></i>x / first</span>
+    <span><i class="axisY frameAxisKey"></i>y / second</span>
+    <span><i class="axisZ frameAxisKey"></i>z / third</span>
+    <span><i class="editableVectorKey"></i>editable vector</span>
+    <span class="legendNote">World: North · Up · East</span>
+  </footer>
+
+  <script type="importmap">
+  { "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }}
+  </script>
+  <script type="module" src="./frame_studio_app.js"></script>
+</body>
+</html>

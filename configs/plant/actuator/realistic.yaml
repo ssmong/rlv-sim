@@ -1,0 +1,2 @@
+# Realistic actuator (default): 2nd-order servos w/ rate+deflection limits, throttle lag + deep-throttle floor + flameout, RCS deadband + MIB. Params in vehicle.actuator.
+model: realistic

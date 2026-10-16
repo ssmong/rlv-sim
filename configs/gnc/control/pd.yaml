@@ -1,0 +1,5 @@
+# Per-axis PD attitude controller; pd.build sizes gains from these targets + wet inertia.
+wn_axis: [1.0, 1.4, 1.4] # target attitude bandwidth [rad/s]: roll, pitch, yaw
+zeta: 0.7 # target damping ratio (all axes)
+law:
+  _target_: gnc.control.pd.build

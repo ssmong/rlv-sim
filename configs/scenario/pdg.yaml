@@ -1,0 +1,29 @@
+# Default scenario — landing burn only (engine armed, vertical approach to the pad at origin).
+name: pdg
+start_phase: powered
+ic:
+  r_ned: [0.0, 0.0, -300.0] # 300 m above the pad
+  v_ned: [0.0, 0.0, 25.0] # descending at 25 m/s
+  roll_deg: 0.0
+  pitch_deg: 90.0 # nose-up / engine-down (body-x = NED up): upright vertical approach
+  yaw_deg: 0.0
+  w_body: [0.0, 0.0, 0.0]
+  m: 29500.0 # landing-burn start mass [kg] (dry mass + landing propellant)
+  throttle0: 0.0
+
+dispersion: # IC dispersion for Monte-Carlo / open-loop batch (off by default)
+  enable: false
+  pos_sigma: [50.0, 50.0, 50.0]
+  vel_sigma: [5.0, 5.0, 5.0]
+
+horizon:
+  t_max: 40.0
+  ctrl_dt: 0.02 # tracking-control tick [s]
+  nav_dt: 0.01 # nav tick [s] (faster than control)
+  guidance_dt: 1.0 # guidance re-solve tick [s] (1 Hz MPC/SOCP re-plan cadence)
+  log_dt: 0.1 # logging downsample [s]
+
+success:
+  pos_tol: 10.0
+  speed_tol: 5.0
+  tilt_tol_deg: 15.0

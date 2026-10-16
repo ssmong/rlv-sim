@@ -1,0 +1,9 @@
+# US Standard Atmosphere 1976; rho/a from layers (rho0/scale_height/a_sound unused, schema parity).
+model: ussa_poly
+rho0: 1.225
+scale_height: 8500.0
+a_sound: 340.3 # sea-level reference [m/s] (a derived from layer temperature)
+g0: 9.80665
+p_sea: 101325.0
+delta_T: 0.0 # ISA temperature offset [K]; 0 = standard day (use nonstd_day for a hot/dispersed draw)
+density_scale: 1.0 # density dispersion multiplier; 1 = nominal

@@ -1,0 +1,3 @@
+# Copy-me navigation config — pairs with gnc/navigation/template.py.
+law:
+  _target_: gnc.navigation.template.build

@@ -1,0 +1,5 @@
+# Copy-me controller config — pairs with gnc/control/template.py.
+wn_axis: [1.0, 1.4, 1.4]
+zeta: 0.7
+law:
+  _target_: gnc.control.template.build

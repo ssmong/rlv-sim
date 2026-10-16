@@ -1,0 +1,2 @@
+# Ideal actuator: lag-free command tracking (still clamped to physical envelope). Diagnostic backend to bisect actuator dynamics vs guidance error; not a flight model.
+model: ideal

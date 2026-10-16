@@ -1,0 +1,9 @@
+# @package _global_
+# IDEAL preset: all laddered plant modules at ideal tier (aero & massprops not laddered).
+# Apply with +fidelity=ideal; each override is still individually overridable after it.
+defaults:
+  - override /environment/wind: none
+  - override /environment/atmosphere: vacuum
+  - override /plant/thrust: vacuum
+  - override /plant/actuator: ideal
+  - override /plant/slosh: none

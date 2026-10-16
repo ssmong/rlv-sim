@@ -1,0 +1,13 @@
+# Single-crossing guard scheduler: psi(x;theta) = threshold - altitude >= 0 (generic state-triggered switch).
+# Same thresholds/engine profile as the altitude scheduler; only the trigger differs (type).
+type: guard
+
+# Engine-count profile is fixed per phase: 3-0-1, or 3-0-3-1 with powered_brake.
+powered_brake: false
+reentry_engines: [0, 1, 5]
+brake_engines: [0, 1, 5]
+landing_engines: [0]
+
+reentry_end_altitude: 20000.0
+switch_altitude: 2000.0
+brake_end_altitude: 800.0

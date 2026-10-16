@@ -1,0 +1,2 @@
+# Atmospheric back-pressure thrust (default): F = throttle*T_vac - p_amb(h)*A_e, p_amb from the atmosphere group. The flight model.
+model: backpressure

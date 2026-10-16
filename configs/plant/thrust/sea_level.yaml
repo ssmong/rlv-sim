@@ -1,0 +1,2 @@
+# Sea-level thrust (simplified): F = throttle*T_vac - p_sea*A_e, constant worst-case back-pressure (no altitude falloff). Between vacuum and backpressure.
+model: sea_level

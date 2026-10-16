@@ -1,0 +1,7 @@
+# Steady wind: constant deterministic mean, no turbulence (turbulence fields 0 for schema parity).
+model: steady
+mean0: [8.0, 0.0, 0.0] # constant wind NED [m/s] (override per run)
+ou_tau: 100.0
+ou_sigma: [0.0, 0.0, 0.0]
+turb_L: [400.0, 400.0, 100.0]
+turb_sigma: [0.0, 0.0, 0.0]

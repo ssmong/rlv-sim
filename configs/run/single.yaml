@@ -1,0 +1,6 @@
+# Single closed-loop rollout (proof-of-life).
+mode: single
+run_id: single_${now:%Y%m%d_%H%M%S}
+save_plots: true
+save_replay: true # write replay.json for the web viewer (scripts/view_replay.py)
+leg_deploy_alt_m: 60.0 # viz: deploy the landing legs when the booster first descends below this [m]

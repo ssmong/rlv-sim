@@ -1,0 +1,23 @@
+# SALTO/T3 AEDB-backed body aero + grid-fin increment model.
+model: table
+backend: file
+
+file:
+  path: data/aero/salto_t3_aero.npz
+
+fins:
+  n_fins: 4
+  incremental: true # body table already includes deployed zero-deflection fins
+  fin_area: 1.20
+  fin_radius: 1.85
+  fin_x: -3.5
+  fin_phase_deg: 45.0 # X-wing
+  # Static component coefficients are inactive because the table below defines fin increments.
+  fin_cla: 0.0
+  fin_cd0: 0.0
+  fin_stall_deg: 25.0
+  fin_transonic_mach: 1.0
+  # Data-backed grid-fin increments (per-fin, alpha=0): normal-force slope and drag-due-to-deflection.
+  mach_grid: [0.6, 0.9, 2.0, 3.0]
+  cla_table: [-2.566875, -1.7968125, -1.92515625, -1.66846875]
+  cd_delta2_table: [2.08206275, 1.245763806, 1.237461899, 1.075958827]

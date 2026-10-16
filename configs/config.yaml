@@ -1,0 +1,36 @@
+# RLV 6-DOF plant — root Hydra config. Default integrated set is SALTO/T3.
+defaults:
+  - plant/vehicle: salto_t3
+  - plant/aero: salto_table
+  - plant/slosh: none
+  - plant/actuator: realistic
+  - plant/thrust: backpressure
+  - environment/atmosphere: ussa_poly
+  - environment/wind: none
+  - environment/earth: fixed
+  - fault: none
+  - scenario: salto_aero_to_landing
+  - gnc/scheduler: salto
+  - gnc/guidance: lcvx
+  - gnc/control: pd
+  - gnc/allocation: default
+  - gnc/navigation: identity
+  - run: single
+  - vehicle_set: salto
+  - _self_
+
+seed: 0
+plant_dt: 0.001 # RK4 fixed step [s]; larger steps require a timestep-convergence check
+
+gnc:
+  delay_ticks: 0 # GNC transport delay [ctrl ticks] — loop-level, shared by all gnc modules
+
+# Output dir: results/<script>/<date>/<time>; resolved config + seed saved.
+hydra:
+  job:
+    chdir: true # cwd -> the run dir (Hydra 1.2+ defaults this off)
+  run:
+    dir: results/${hydra.job.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: results/${hydra.job.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

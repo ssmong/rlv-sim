@@ -1,0 +1,7 @@
+# No wind (deterministic checks). Fields present for schema parity.
+model: none
+mean0: [0.0, 0.0, 0.0]
+ou_tau: 50.0
+ou_sigma: [0.0, 0.0, 0.0]
+turb_L: [200.0, 200.0, 50.0]
+turb_sigma: [0.0, 0.0, 0.0]

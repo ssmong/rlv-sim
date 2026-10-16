@@ -1,0 +1,7 @@
+# Equivalent pendulum slosh, 2 planes (optional). omega from signed a_axial/L; params per NASA SP-106 (Abramson/Dodge), R=1.83 m.
+model: pendulum
+slosh_mass: 300.0 # first-mode participating mass [kg] of the low-fill landing residual (m1 <= residual liquid); re-tune for higher-fill legs. Scan +/-50%.
+pendulum_length: 2.0 # effective low-fill length [m]; ~1.0 m full, rising as the tank empties.
+omega: 3.0 # unused by pendulum (omega = sqrt(a_axial/L)); 3.0 only for springmass.
+zeta: 0.02 # ring-baffled tank damping (smooth-wall ~0.001-0.002; baffled 0.01-0.05 per Dodge).
+x_attach: -20.0 # tank attach body-x [m]; +2 m fwd of wet CG. Offset gives rotational excitation.

@@ -1,0 +1,50 @@
+[project]
+name = "rlv-sim"
+version = "0.1.0"
+description = "RLV 6-DOF descent/landing simulator with native C++ numerics and modular GNC"
+requires-python = ">=3.10"
+readme = "README.md"
+
+dependencies = [
+    "numpy>=2.1",
+    "scipy>=1.14",
+    "hydra-core>=1.3.2",
+    "omegaconf>=2.3",
+    "matplotlib>=3.9",
+    "cvxpy>=1.6",
+    "clarabel>=0.10",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+qoco = ["qoco>=0.3"]
+
+[build-system]
+requires = ["setuptools>=68", "pybind11>=2.13"]
+build-backend = "setuptools.build_meta"
+
+# src/ layout: top-level packages (core, plant, gnc, sim) live under src/; gnc/ holds the
+# guidance / navigation / control / allocation subpackages. find() auto-discovers them all.
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]  # subdir tests import shared fixtures from tests/conftest.py
+# Tests run in float64 for the analytical known-case anchors.
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# E741: single-letter math names (I=inertia, C=DCM) are domain convention here.
+# E731: short lambda closures are idiomatic for the RHS/interp helpers.
+ignore = ["E741", "E731"]
+
+[tool.ruff.lint.per-file-ignores]
+# The multiprocessing launcher sets its thread environment before numeric imports.
+"scripts/*" = ["E402"]

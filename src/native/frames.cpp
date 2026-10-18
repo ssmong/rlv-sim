@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
-#include <numbers>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -24,6 +23,7 @@ using Quat = std::array<double, 4>;
 using Mat3 = std::array<double, 9>;
 
 constexpr double kTiny = 1e-15;
+constexpr double kPi = 3.14159265358979323846;
 constexpr double kWgs84A = 6378137.0;
 constexpr double kWgs84F = 1.0 / 298.257223563;
 constexpr double kWgs84E2 = kWgs84F * (2.0 - kWgs84F);
@@ -165,7 +165,7 @@ Mat3 dcm_ecef_to_ned_value(double latitude, double longitude) {
     if (!std::isfinite(latitude) || !std::isfinite(longitude)) {
         throw py::value_error("latitude_rad and longitude_rad must be finite");
     }
-    if (latitude < -0.5 * std::numbers::pi || latitude > 0.5 * std::numbers::pi) {
+    if (latitude < -0.5 * kPi || latitude > 0.5 * kPi) {
         throw py::value_error("latitude_rad must be in [-pi/2, pi/2]");
     }
     const double sp = std::sin(latitude), cp = std::cos(latitude);
@@ -292,7 +292,7 @@ PYBIND11_MODULE(_rlv_sim_native, m) {
         if (!std::isfinite(latitude_rad) || !std::isfinite(longitude_rad) || !std::isfinite(altitude_m)) {
             throw py::value_error("geodetic coordinates must be finite");
         }
-        if (latitude_rad < -0.5 * std::numbers::pi || latitude_rad > 0.5 * std::numbers::pi) {
+        if (latitude_rad < -0.5 * kPi || latitude_rad > 0.5 * kPi) {
             throw py::value_error("latitude_rad must be in [-pi/2, pi/2]");
         }
         const double sp = std::sin(latitude_rad), cp = std::cos(latitude_rad);

@@ -10,7 +10,7 @@ A modular 6-DOF simulator for reusable-launch-vehicle descent and landing. A nat
 - Seeded multiprocessing Monte Carlo with KPI aggregation; every run exports `replay.json` for a three.js 3D replay viewer.
 
 ## Stack
-C++20 · pybind11 · Python 3.10+ · NumPy · SciPy · Hydra · CVXPY · Clarabel · QOCO · three.js · pytest
+C++17 · pybind11 · Python 3.10+ · NumPy · SciPy · Hydra · CVXPY · Clarabel · QOCO · three.js · pytest
 
 ## Layout
 ```text
@@ -26,7 +26,7 @@ docs/         Architecture and module guide
 
 ## Usage
 ```bash
-python -m pip install -e ".[dev]"   # builds the C++ extension (C++20 compiler)
+python -m pip install -e ".[dev,qoco]"   # C++17 extension, QOCO C library, and test dependencies
 python scripts/run_single.py vehicle_set=falcon9 plant/actuator=ideal gnc/guidance=scvx
 python scripts/run_montecarlo.py vehicle_set=falcon9 plant/actuator=ideal run=montecarlo run.n_episodes=32
 python scripts/view_replay.py       # 3D replay of the latest run in results/

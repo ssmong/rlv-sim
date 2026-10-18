@@ -153,6 +153,17 @@ def test_wgs84_lla_ecef_and_local_ned_roundtrips():
         frames.lla_to_ecef(np.pi, longitude, altitude)
 
 
+def test_geodetic_latitude_limits():
+    for latitude in (-np.pi / 2, np.pi / 2):
+        assert np.all(np.isfinite(frames.dcm_ecef_to_ned(latitude, 0.0)))
+        assert np.all(np.isfinite(frames.lla_to_ecef(latitude, 0.0, 0.0)))
+        outside = np.nextafter(latitude, np.copysign(np.inf, latitude))
+        with np.testing.assert_raises(ValueError):
+            frames.dcm_ecef_to_ned(outside, 0.0)
+        with np.testing.assert_raises(ValueError):
+            frames.lla_to_ecef(outside, 0.0, 0.0)
+
+
 def test_native_batch_transform_preserves_leading_shape():
     q_bn = frames.quat_from_euler(0.2, 0.1, -0.4)
     C_bn = frames.dcm_from_quat(q_bn)
